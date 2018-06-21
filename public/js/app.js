@@ -4,3 +4,8 @@ $("#headlines").on("click", function (){
         $('#data').append(data)
     })
 })
+
+$(document).on('click', ".comment", function () {  
+    $("#form-"+$(this).data("id")).show()
+    console.log($(this).data("id"))
+})

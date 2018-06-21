@@ -1,5 +1,21 @@
 <ul>
     {{#each headlines}}
-        {{title}} <a href="{{link}}"> View</a><br>
+        <div class="headline" data-id="{{_id}}">
+            {{title}} <a href="{{link}}"> View</a>
+            {{#if photo}}
+                <img src='{{photo}}'/>
+            {{/if}}
+            {{#if genre}}
+                <br>{{genre}}
+            {{/if}}
+            <br>{{synopsis}}<br>
+            <button class="comment" data-id="{{_id}}">Comment</button><br>
+            <form id="form-{{_id}}" action="/addComment/{{_id}}" style="display:none;" method="post">
+                Comment: <br>
+                <input type="text" name="body">
+                <br>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
     {{/each}}
 </ul>
