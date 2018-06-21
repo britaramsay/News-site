@@ -9,6 +9,7 @@
                 <br>{{genre}}
             {{/if}}
             <br>{{synopsis}}<br>
+            <div class="getComments" id="{{_id}}">({{this.numComments}}) Comments</div><br>
             <button class="comment" data-id="{{_id}}">Comment</button><br>
             <form id="form-{{_id}}" action="/addComment/{{_id}}" style="display:none;" method="post">
                 Comment: <br>
@@ -16,6 +17,9 @@
                 <br>
                 <input type="submit" value="Submit">
             </form>
+            <div id="comments-{{_id}}">
+                {{!-- {{> comments}} --}}
+            </div>
         </div>
     {{/each}}
 </ul>

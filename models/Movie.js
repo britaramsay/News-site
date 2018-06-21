@@ -19,10 +19,10 @@ var movie = new Schema({
     photo: {
         type: String
     },
-    comment: {
+    comment: [{
         type: Schema.Types.ObjectId,
         ref: "Comment"
-    }
+    }]
 })
 
 var Movie = mongoose.model("Movie", movie);
