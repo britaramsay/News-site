@@ -1,24 +1,39 @@
 <ul>
     {{#each headlines}}
         <div class="headline" data-id="{{_id}}">
-            {{title}} <a href="{{link}}"> View</a>
-            {{#if photo}}
-                <img src='{{photo}}'/>
-            {{/if}}
-            {{#if genre}}
-                <br>{{genre}}
-            {{/if}}
-            <br>{{synopsis}}<br>
-            <div class="getComments" id="{{_id}}">({{this.numComments}}) Comments</div><br>
-            <button class="comment" data-id="{{_id}}">Comment</button><br>
-            <form id="form-{{_id}}" action="/addComment/{{_id}}" style="display:none;" method="post">
-                Comment: <br>
-                <input type="text" name="body">
-                <br>
-                <input type="submit" value="Submit">
-            </form>
-            <div id="comments-{{_id}}">
-                {{!-- {{> comments}} --}}
+            <div class="container">
+                <div class="row">
+                    <div class="col-4">
+                        {{#if photo}}
+                            <img src="{{photo}}">
+                        {{/if}}
+                    </div>
+                    <div class="col-8">
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-primary">
+                                {{title}} <a href="{{link}}"> View</a><br>
+                            </li>
+                            {{#if genre}}
+                                <li class="list-group-item list-group-item-secondary">{{genre}}</li>
+                            {{/if}}
+                            <li class="list-group-item list-group-item-info">{{synopsis}}</li>
+                        </ul>
+                        <br>
+                        <form id="form-{{_id}}" action="/addComment/{{_id}}" method="post">
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Leave a Comment</span>
+                                </div>
+                                <textarea class="form-control" name="body" aria-label="With textarea"></textarea>
+                            </div>
+                            <input type="submit" class="btn btn-dark btn-sm" value="Submit">
+                        </form>
+                        <br>
+                        {{!-- show comments when clicked --}}
+                        <div class="getComments" id="{{_id}}">({{this.numComments}}) Comments</div><br>            
+                        <div id="comments-{{_id}}"></div>
+                   </div>
+                </div>
             </div>
         </div>
     {{/each}}
