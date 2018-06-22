@@ -44,11 +44,29 @@ $(document).on('click', '.hideComments', function () {
 
 $(document).on('click', '.delete', function () {  
     console.log($(this).data('movie'))
-    $.post('/deleteComment/' + $(this).attr('id'),
-        (result) => {
+    $.post('/deleteComment/' + $(this).attr('id'), (result) => {
             // Do something with the result
             getComments($(this).data('movie'))
         }
     );
     
 })
+
+$(document).on('click', '.bookmark', function () { 
+    console.log('hiii') 
+    $.post('/save/'+$(this).attr('id'), (result) => {
+        $(this).removeClass('bookmark far')
+        $(this).addClass('remove fas')
+    })
+})
+
+$(document).on('click', '.remove', function () { 
+    console.log('hiii') 
+    $.post('/remove/'+$(this).attr('id'), (result) => {
+        $(this).removeClass('remove fas')
+        $(this).addClass('bookmark far')
+    })
+})
+// $(document).on('click', '.saved', function() {
+//     $.get('/saved')
+// })

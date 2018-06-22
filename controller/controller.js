@@ -52,10 +52,50 @@ router.get('/', (req, res) => {
     .populate('comment')
     .then(function (data) { 
         data.map((element) => {
+            if(req.cookies.saved.indexOf(element._id+'') !== -1)
+                element.save = true
+            else    
+                element.save = false
             element.numComments = element.comment.length
         })
-        res.render('index', { headlines: data })    
+        res.render('index', { noneSaved: false, headlines: data })    
     })    
+})
+
+router.get('/saved', (req, res) => {
+    if(req.cookies.saved) {
+        var results = []
+        
+        req.cookies.saved.forEach(getArray)
+        function getArray(movie, index, array) {
+            db.Movie.findOne({_id: movie})
+            .populate('comment')            
+            .then((data) => { 
+                data.save = true
+                data.numComments = data.comment.length
+                results.push(data)
+                if(index == array.length - 1){
+                    res.render('index', { noneSaved: false, headlines: results })            
+                }
+                else return results
+            })  
+        }   
+    }
+    else {
+        var data = []
+        res.render('index', { noneSaved: true })    
+    }
+})
+
+router.post('/remove/:id', (req, res) => {
+    req.cookies.saved.splice(req.cookies.saved.indexOf(req.params.id), 1)
+
+    var newCookie = req.cookies.saved
+    res.clearCookie('saved');
+
+    res.cookie('saved', newCookie, { maxAge: 9000000000 }); 
+    res.json('Deleted')
+        // deleted at most one tank document
 })
 
 router.post('/addComment/:id', (req, res) => {
@@ -97,6 +137,26 @@ router.post('/addComment/:id', (req, res) => {
     })
 })
 
+router.post('/save/:id', (req, res) => {
+    if(req.cookies.saved) {
+        // If cookie is define, push new comment id
+        if(req.cookies.saved.indexOf(req.params.id) == -1) {
+            var arr = req.cookies.saved
+            arr.push(req.params.id)
+            res.clearCookie('saved');
+    
+            res.cookie('saved', arr, { maxAge: 9000000000 });   
+        }
+    }        
+    else {
+        var arr = []
+        arr.push(req.params.id)
+        // Set cookie
+        res.cookie('saved', arr, { maxAge: 9000000000 });
+    } 
+    return res.json('saved')
+})
+
 // Get all comments on the movie
 router.get('/getComments/:id', (req, res) => {
     db.Movie.findOne({_id: req.params.id}).then(function (movie) {
@@ -107,23 +167,23 @@ router.get('/getComments/:id', (req, res) => {
             // console.log(element) 
             db.Comment.findOne({_id: element}).then(function (comment) {
                 if(comment) {
-                comment.movieID = req.params.id 
-                if(req.cookies.comment) {
-                    req.cookies.comment.forEach(com => {
-                        if(com == comment._id) {
-                            comment.owner = true
-                        }
-                        else if(!comment.owner)
-                            comment.owner = false
-                    })
-                }
-                else    
-                    comment.owner = false
-                comments.push(comment)
-             
+                    comment.movieID = req.params.id 
+                    if(req.cookies.comment) {
+                        req.cookies.comment.forEach(com => {
+                            if(com == comment._id) {
+                                comment.owner = true
+                            }
+                            else if(!comment.owner)
+                                comment.owner = false
+                        })
+                    }
+                    else    
+                        comment.owner = false
+                    comments.push(comment)
+                
                 }
                 if(index == array.length - 1)
-                res.render('partials/comments', {comments: comments, layout:false})    
+                    res.render('partials/comments', {comments: comments, layout:false})    
             })
         }  
     })

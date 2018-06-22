@@ -2,6 +2,9 @@
     {{#each headlines}}
         <div class="headline" data-id="{{_id}}">
             <div class="row">
+                {{#if noneSaved}}
+                    <h4>No saved movies</h4>
+                {{/if}}
                 <div class="col-4">
                     {{#if photo}}
                         <img class='img-fluid' src="{{photo}}">
@@ -13,7 +16,13 @@
                 <div class="col-8">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-primary">
-                            <h5>{{title}} <a href="{{link}}"><i class="fas fa-external-link-alt"></i></a><i style="float:right;" class="far fa-bookmark"></i></h5>
+                            <h5>{{title}} <a href="{{link}}"><i class="fas fa-external-link-alt"></i></a>
+                            {{#if this.save}}
+                                <i style="float:right;" class="remove fas fa-bookmark" id="{{_id}}"></i></h5>
+                            {{/if}}
+                            {{#unless this.save}}
+                                <i style="float:right;" class="bookmark far fa-bookmark" id="{{_id}}"></i></h5>
+                            {{/unless}}
                         </li>
                         {{#if genre}}
                             <li class="list-group-item list-group-item-secondary">{{genre}}</li>

@@ -5,10 +5,12 @@
         </div>
         <div class="col-12">
             <button class="btn btn-info btn-sm" id="headlines">Scrape New Movies</button>
+            <a href="/saved"><button class="btn btn-info btn-sm" id="saved">Saved Movies</button></a>
+            <a href="/"><button class="btn btn-info btn-sm">All Movies</button></a>
         </div>
     </div>
 
     <div id="data">
-        {{> headlines headlines=headlines}}
+        {{> headlines}}
     </div>
 </div>
