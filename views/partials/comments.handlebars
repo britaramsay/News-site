@@ -1,5 +1,9 @@
-    {{#each comments}}
-        <li class="list-group-item">
-            {{body}}<br>
-        </li>
-    {{/each}}
+{{#each comments}}
+    <li class="list-group-item">
+        {{body}}     
+        {{movieID}}  
+        {{#if owner}}
+            <i id='{{_id}}' data-movie='{{movieID}}' class="delete far fa-trash-alt"></i>
+        {{/if}}
+    </li>
+{{/each}}

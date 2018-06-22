@@ -1,43 +1,44 @@
 <ul>
     {{#each headlines}}
         <div class="headline" data-id="{{_id}}">
-                <div class="row">
-                    <div class="col-4">
-                        {{#if photo}}
-                            <img class='img-fluid' src="{{photo}}">
-                        {{/if}}
-                        {{#unless photo}}
-                            <img class="img-fluid" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg">
-                        {{/unless}}
-                    </div>
-                    <div class="col-8">
-                        <ul class="list-group">
-                            <li class="list-group-item list-group-item-primary">
-                                <h5>{{title}} <a href="{{link}}"> View</a></h5>
-                            </li>
-                            {{#if genre}}
-                                <li class="list-group-item list-group-item-secondary">{{genre}}</li>
-                            {{/if}}
-                            <li class="list-group-item list-group-item-info">{{synopsis}}</li>
-                        </ul>
-                        <br>
-                        <form class="comment-form" data-id="{{_id}}">
-                            <div class="input-group input-group-sm mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">Leave a Comment</span>
-                                </div>
-                                <textarea class="form-control" name="body" id="body-{{_id}}" aria-label="body"></textarea>
-                            </div>
-                            <input type="submit"  class="submit btn btn-dark btn-sm" value="Submit">
-                        </form>
-                        <br>
-                        {{!-- show comments when clicked --}}
-                        <div class="getComments" id="list-{{_id}}" data-comments="{{this.numComments}}">Show ({{this.numComments}}) Comments</div><br>            
-                        <ul class="list-group">
-                            <div id="comments-{{_id}}"></div>
-                        </ul>
-                   </div>
+            <div class="row">
+                <div class="col-4">
+                    {{#if photo}}
+                        <img class='img-fluid' src="{{photo}}">
+                    {{/if}}
+                    {{#unless photo}}
+                        <img class="img-fluid" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg">
+                    {{/unless}}
                 </div>
+                <div class="col-8">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-primary">
+                            <h5>{{title}} <a href="{{link}}"><i class="fas fa-external-link-alt"></i></a><i style="float:right;" class="far fa-bookmark"></i></h5>
+                        </li>
+                        {{#if genre}}
+                            <li class="list-group-item list-group-item-secondary">{{genre}}</li>
+                        {{/if}}
+                        <li class="list-group-item list-group-item-info">{{synopsis}}</li>
+                    </ul>
+                    <br>
+                    <form class="comment-form" data-id="{{_id}}">
+                        <div class="input-group input-group-sm mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Leave a Comment</span>
+                            </div>
+                            <textarea class="form-control" name="body" id="body-{{_id}}" aria-label="body"></textarea>
+                        </div>
+                        <input type="submit"  class="submit btn btn-dark btn-sm" value="Submit">
+                    </form>
+                    <br>
+                    {{!-- show comments when clicked --}}
+                    <div class="getComments" id="list-{{_id}}" data-comments="{{this.numComments}}">({{this.numComments}}) Comments <i class="fas fa-angle-down"></i></div><br>            
+                    <ul class="list-group">
+                        <div id="comments-{{_id}}"></div>
+                    </ul>
+                </div>
+            </div>
         </div>
+        <br>
     {{/each}}
 </ul>

@@ -59,8 +59,24 @@ router.get('/', (req, res) => {
 })
 
 router.post('/addComment/:id', (req, res) => {
-    console.log(req.body)
+    // create comment from form body
     db.Comment.create(req.body).then(function (comment) {  
+        if(req.cookies.comment) {
+            // If cookie is define, push new comment id
+            var arr = req.cookies.comment
+            arr.push(comment._id)
+            res.clearCookie('comment');
+
+            res.cookie('comment', arr, { maxAge: 9000000000 });   
+        }        
+        else {
+            var arr = []
+            arr.push(comment._id)
+            // Set cookie
+            res.cookie('comment', arr, { maxAge: 9000000000 });
+        }   
+        comment.movieID = req.params.id 
+
         return db.Movie.findOneAndUpdate({ _id: req.params.id }, { $push: { comment: comment._id } }, { new: true })
         .then(function(dbMovie) {
         // If the User was updated successfully, send it back to the client
@@ -70,7 +86,7 @@ router.post('/addComment/:id', (req, res) => {
                 db.Comment.findOne({_id: element}).then(function (comment) {
                     comments.push(comment)
                     if(index == array.length - 1)
-                        res.render('partials/comments', {comments: comments.length, comments: comments, layout:false})    
+                        res.render('partials/comments', {movieID: req.params.id, commentLength: comments.length, comments: comments, layout:false})    
                 })
             }              
         })
@@ -86,16 +102,52 @@ router.get('/getComments/:id', (req, res) => {
     db.Movie.findOne({_id: req.params.id}).then(function (movie) {
         var comments = []
         movie.comment.forEach(getArray)
-        function getArray(element, index, array) {  
+        function getArray(element, index, array) { 
+            // db.Movie.update({_id: user._id}, {$unset: {field: 1 }})
+            // console.log(element) 
             db.Comment.findOne({_id: element}).then(function (comment) {
+                if(comment) {
+                comment.movieID = req.params.id 
+                if(req.cookies.comment) {
+                    req.cookies.comment.forEach(com => {
+                        if(com == comment._id) {
+                            comment.owner = true
+                        }
+                        else if(!comment.owner)
+                            comment.owner = false
+                    })
+                }
+                else    
+                    comment.owner = false
                 comments.push(comment)
+             
+                }
                 if(index == array.length - 1)
-                    res.render('partials/comments', {comments: comments, layout:false})    
+                res.render('partials/comments', {comments: comments, layout:false})    
             })
         }  
     })
     .catch(function (err) {  
         res.json(err)
+    })
+})
+
+router.post('/deleteComment/:id', (req, res) => {
+    
+    db.Comment.remove({_id: req.params.id}, function (err) {
+        if(!err) {
+            req.cookies.comment.splice(req.cookies.comment.indexOf(req.params.id), 1)
+
+            var newCookie = req.cookies.comment
+            res.clearCookie('comment');
+
+            res.cookie('comment', newCookie, { maxAge: 9000000000 }); 
+        }
+    console.log('hi')
+        
+        if (err) console.log(err);
+        else res.json('Deleted')
+        // deleted at most one tank document
     })
 })
 
