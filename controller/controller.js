@@ -10,9 +10,9 @@ router.get('/headlines', function (req, res) {
         var $ = cheerio.load(html)
 
         $('.movie').each((index, element) => {
+            // TODO: Fix all to matchc cheerio
             var title = element.children[1].children[0].children[0].children[0].data
             var photo = $(element).children().text().substring($(element).children().text().indexOf('https'), $(element).children().text().indexOf('" alt'))
-            console.log('\n')
            
             // Look for this movie in the database
             db.Movie.findOne({ title: title }).then(function (data) {
@@ -33,7 +33,6 @@ router.get('/headlines', function (req, res) {
                     })
                     .then(function(dbMovie) {
                         added++
-                        console.log(added)
                         
                         return res.json(added)
                     })
@@ -44,6 +43,7 @@ router.get('/headlines', function (req, res) {
             })
         })
     })
+    console.log(added)
     // res.render('index', added)    
 })
 
@@ -59,12 +59,20 @@ router.get('/', (req, res) => {
 })
 
 router.post('/addComment/:id', (req, res) => {
-
+    console.log(req.body)
     db.Comment.create(req.body).then(function (comment) {  
         return db.Movie.findOneAndUpdate({ _id: req.params.id }, { $push: { comment: comment._id } }, { new: true })
         .then(function(dbMovie) {
         // If the User was updated successfully, send it back to the client
-            res.json(dbMovie);
+            // res.json(dbMovie);
+            movie.comment.forEach(getArray)
+            function getArray(element, index, array) {  
+                db.Comment.findOne({_id: element}).then(function (comment) {
+                    comments.push(comment)
+                    if(index == array.length - 1)
+                        res.render('partials/comments', {comments: comments.length, comments: comments, layout:false})    
+                })
+            }              
         })
         .catch(function(err) {
         // If an error occurs, send it back to the client
