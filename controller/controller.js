@@ -51,8 +51,8 @@ router.get('/', (req, res) => {
     db.Movie.find({})
     .populate('comment')
     .then(function (data) { 
-        if(data.length == 0)
-            router.get('/headlines')
+        if(!data)
+            res.render('index', { noneSaved: false })          
         // Map each movie
         data.map((element) => {
             // Set save = true if element is in cookie array
