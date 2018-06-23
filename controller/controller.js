@@ -96,6 +96,7 @@ router.get('/saved', (req, res) => {
                 return results
             })  
         }   
+        console.log(results)
         res.render('index', { noneSaved: false, headlines: results })                    
     }
     // If there are not saved comments
