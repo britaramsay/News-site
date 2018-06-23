@@ -4,7 +4,7 @@ const   express = require("express"),
         exphbs = require("express-handlebars"),
         bodyParser = require("body-parser"),
         cookieParser = require('cookie-parser'),  
-        PORT = process.env.PORT || 3000,
+        port = process.env.PORT || 3000,
         MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines",
         routes = require("./controller/controller.js"),
         app = express();
@@ -30,6 +30,6 @@ mongoose.Promise = Promise;
 mongoose.connect(MONGODB_URI);
 
 // Start the server
-app.listen(PORT, function() {
-    console.log("App running on port " + PORT + "!");
+app.listen(port, function() {
+    console.log("App running on port " + port + "!");
 });
