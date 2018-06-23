@@ -93,11 +93,12 @@ router.get('/saved', (req, res) => {
                 // Push element to array
                 results.push(data)
         console.log(results)
-                
-                return results
+                if(index == array.length - 1)
+                    res.render('index', { noneSaved: false, headlines: results })                    
+                else
+                    return results
             })  
         }   
-        res.render('index', { noneSaved: false, headlines: results })                    
     }
     // If there are not saved comments
     else {
