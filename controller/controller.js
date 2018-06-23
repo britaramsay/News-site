@@ -51,10 +51,8 @@ router.get('/', (req, res) => {
     db.Movie.find({})
     .populate('comment')
     .then(function (data) { 
-        if(!data)
-            res.render('index', { noneSaved: false })          
         // Map each movie
-        else{
+        if (data.length){
             data.map((element) => {
                 // Set save = true if element is in cookie array
                 if(req.cookies.saved.indexOf(element._id+'') !== -1)
@@ -67,6 +65,8 @@ router.get('/', (req, res) => {
             // Render headlines
             res.render('index', { noneSaved: false, headlines: data })  
         }
+        else        
+            res.render('index', { noneSaved: false })          
     })    
 })
 
