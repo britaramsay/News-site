@@ -5,18 +5,18 @@ const   express = require('express'),
         db = require("../models");
 
 router.get('/headlines', function (req, res) {
-    var added = 0;
+    
     request('https://movieweb.com/new-movies/', function (err, response, html) {
         var $ = cheerio.load(html)
 
         $('.movie').each((index, element) => {
+            
             // TODO: Fix all to matchc cheerio
             var title = element.children[1].children[0].children[0].children[0].data
             var photo = $(element).children().text().substring($(element).children().text().indexOf('https'), $(element).children().text().indexOf('" alt'))
            
             // Look for this movie in the database
-            db.Movie.findOne({ title: title }).then(function (data) {
-
+            db.Movie.findOne({ title: title }).then( (data) => {
                 // Create new movie if it is not found
                 if(data == null) {
                     // Save photo and genre if movie has one                    
@@ -30,11 +30,7 @@ router.get('/headlines', function (req, res) {
                         synopsis: element.children[1].children[0].next.next.children[0].children[0].data, 
                         photo: photo 
                     })
-                    .then(function(dbMovie) {
-                        // Increment added
-                        added++
-                        
-                        return res.json(added)
+                    .then((dbMovie) => {
                     })
                     .catch(function(err) {
                         return res.json(err);
@@ -42,8 +38,8 @@ router.get('/headlines', function (req, res) {
                 }
             })
         })
-    })
-    console.log(added)
+    }) 
+    res.json('Scraped, view all')
 })
 
 router.get('/', (req, res) => {

@@ -2,8 +2,12 @@
 $("#headlines").on("click", function (){
     $.get('/headlines').then(function(data) {
         // Empty and append headlines
-        $("#data").empty()
-        $('#data').append(data)
+        console.log(data)
+        $('#data').html('<div class="alert alert-success" role="alert">'+
+        '<strong>MOVIEWEB scraped!</strong> Click "All Movies".'
+      +'</div>')
+        // $("#data").empty()
+        // $('#data').append(data)
     })
 })
 
