@@ -20,10 +20,9 @@ router.get('/headlines', function (req, res) {
                 // Create new movie if it is not found
                 if(data == null) {
                     // Save photo and genre if movie has one                    
-                    // if(element.children[0].children[0])
                     if(element.children[1].children[0].next.children[1].children[0].attribs.class == 'movie-genre')
                         var genre = element.children[1].children[0].next.children[1].children[0].children[0].data
-        
+                    // Create movie
                     db.Movie.create({ 
                         title: title, 
                         link: element.children[1].children[0].children[0].attribs.href, 
@@ -32,6 +31,7 @@ router.get('/headlines', function (req, res) {
                         photo: photo 
                     })
                     .then(function(dbMovie) {
+                        // Increment added
                         added++
                         
                         return res.json(added)
@@ -44,36 +44,47 @@ router.get('/headlines', function (req, res) {
         })
     })
     console.log(added)
-    // res.render('index', added)    
 })
 
 router.get('/', (req, res) => {
+    // Find all db movies
     db.Movie.find({})
     .populate('comment')
     .then(function (data) { 
+        // Map each movie
         data.map((element) => {
+            // Set save = true if element is in cookie array
             if(req.cookies.saved.indexOf(element._id+'') !== -1)
                 element.save = true
             else    
                 element.save = false
+            // Set numComments
             element.numComments = element.comment.length
         })
+        // Render headlines
         res.render('index', { noneSaved: false, headlines: data })    
     })    
 })
 
 router.get('/saved', (req, res) => {
+    // If there are saved movies
     if(req.cookies.saved) {
         var results = []
-        
+        // Call get array for each movie saved in cookies
         req.cookies.saved.forEach(getArray)
+
         function getArray(movie, index, array) {
+            // Find element db entry
             db.Movie.findOne({_id: movie})
             .populate('comment')            
             .then((data) => { 
+                // Set save to true
                 data.save = true
+                // Set num comments
                 data.numComments = data.comment.length
+                // Push element to array
                 results.push(data)
+                // Render headlines on last entry
                 if(index == array.length - 1){
                     res.render('index', { noneSaved: false, headlines: results })            
                 }
@@ -81,6 +92,7 @@ router.get('/saved', (req, res) => {
             })  
         }   
     }
+    // If there are not saved comments
     else {
         var data = []
         res.render('index', { noneSaved: true })    
@@ -88,25 +100,26 @@ router.get('/saved', (req, res) => {
 })
 
 router.post('/remove/:id', (req, res) => {
+    // Remove id from saved cookie
     req.cookies.saved.splice(req.cookies.saved.indexOf(req.params.id), 1)
 
     var newCookie = req.cookies.saved
+    // Clear and resave cookie
     res.clearCookie('saved');
-
     res.cookie('saved', newCookie, { maxAge: 9000000000 }); 
+
     res.json('Deleted')
-        // deleted at most one tank document
 })
 
 router.post('/addComment/:id', (req, res) => {
-    // create comment from form body
+    // Create comment from form body
     db.Comment.create(req.body).then(function (comment) {  
         if(req.cookies.comment) {
-            // If cookie is define, push new comment id
+            // If cookie is defined, push new comment id
             var arr = req.cookies.comment
             arr.push(comment._id)
+            // Clear and resave cookie
             res.clearCookie('comment');
-
             res.cookie('comment', arr, { maxAge: 9000000000 });   
         }        
         else {
@@ -115,16 +128,18 @@ router.post('/addComment/:id', (req, res) => {
             // Set cookie
             res.cookie('comment', arr, { maxAge: 9000000000 });
         }   
+        // Set movieID
         comment.movieID = req.params.id 
-
+        // Push new comment to db movie
         return db.Movie.findOneAndUpdate({ _id: req.params.id }, { $push: { comment: comment._id } }, { new: true })
         .then(function(dbMovie) {
-        // If the User was updated successfully, send it back to the client
-            // res.json(dbMovie);
+            // Call getArray for each comment
             movie.comment.forEach(getArray)
             function getArray(element, index, array) {  
                 db.Comment.findOne({_id: element}).then(function (comment) {
+                    // Push comment to array
                     comments.push(comment)
+                    // Render comments on last array index
                     if(index == array.length - 1)
                         res.render('partials/comments', {movieID: req.params.id, commentLength: comments.length, comments: comments, layout:false})    
                 })
@@ -139,12 +154,13 @@ router.post('/addComment/:id', (req, res) => {
 
 router.post('/save/:id', (req, res) => {
     if(req.cookies.saved) {
-        // If cookie is define, push new comment id
+        // If cookie is defined, push new comment id
         if(req.cookies.saved.indexOf(req.params.id) == -1) {
             var arr = req.cookies.saved
+            // Push new id to saved
             arr.push(req.params.id)
+            // Clear and reset cookie
             res.clearCookie('saved');
-    
             res.cookie('saved', arr, { maxAge: 9000000000 });   
         }
     }        
@@ -157,19 +173,23 @@ router.post('/save/:id', (req, res) => {
     return res.json('saved')
 })
 
-// Get all comments on the movie
 router.get('/getComments/:id', (req, res) => {
+    // Find movie with given id
     db.Movie.findOne({_id: req.params.id}).then(function (movie) {
         var comments = []
+        // Call getArray for each comment on movie
         movie.comment.forEach(getArray)
+
         function getArray(element, index, array) { 
-            // db.Movie.update({_id: user._id}, {$unset: {field: 1 }})
-            // console.log(element) 
             db.Comment.findOne({_id: element}).then(function (comment) {
                 if(comment) {
+                    // Set movieID
                     comment.movieID = req.params.id 
+                    // If a comment was made by user
                     if(req.cookies.comment) {
+                        // For each comment in cookies
                         req.cookies.comment.forEach(com => {
+                            // Set owner to true or false
                             if(com == comment._id) {
                                 comment.owner = true
                             }
@@ -180,8 +200,8 @@ router.get('/getComments/:id', (req, res) => {
                     else    
                         comment.owner = false
                     comments.push(comment)
-                
                 }
+                // Render comments on last index
                 if(index == array.length - 1)
                     res.render('partials/comments', {comments: comments, layout:false})    
             })
@@ -193,21 +213,19 @@ router.get('/getComments/:id', (req, res) => {
 })
 
 router.post('/deleteComment/:id', (req, res) => {
-    
+    // Remove comment with gien id
     db.Comment.remove({_id: req.params.id}, function (err) {
         if(!err) {
+            // Remove id from cookies
             req.cookies.comment.splice(req.cookies.comment.indexOf(req.params.id), 1)
 
             var newCookie = req.cookies.comment
+            // Clear and reset cookie
             res.clearCookie('comment');
-
             res.cookie('comment', newCookie, { maxAge: 9000000000 }); 
         }
-    console.log('hi')
-        
         if (err) console.log(err);
         else res.json('Deleted')
-        // deleted at most one tank document
     })
 })
 
