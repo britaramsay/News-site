@@ -54,17 +54,19 @@ router.get('/', (req, res) => {
         if(!data)
             res.render('index', { noneSaved: false })          
         // Map each movie
-        data.map((element) => {
-            // Set save = true if element is in cookie array
-            if(req.cookies.saved.indexOf(element._id+'') !== -1)
-                element.save = true
-            else    
-                element.save = false
-            // Set numComments
-            element.numComments = element.comment.length
-        })
-        // Render headlines
-        res.render('index', { noneSaved: false, headlines: data })    
+        else{
+            data.map((element) => {
+                // Set save = true if element is in cookie array
+                if(req.cookies.saved.indexOf(element._id+'') !== -1)
+                    element.save = true
+                else    
+                    element.save = false
+                // Set numComments
+                element.numComments = element.comment.length
+            })
+            // Render headlines
+            res.render('index', { noneSaved: false, headlines: data })  
+        }
     })    
 })
 
