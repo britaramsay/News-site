@@ -55,8 +55,12 @@ router.get('/', (req, res) => {
         if (data.length){
             data.map((element) => {
                 // Set save = true if element is in cookie array
-                if(req.cookies.saved.indexOf(element._id+'') !== -1)
-                    element.save = true
+                if(req.cookies.saved){
+                    if(req.cookies.saved.indexOf(element._id+'') !== -1)
+                        element.save = true
+                    else    
+                        element.save = false
+                }
                 else    
                     element.save = false
                 // Set numComments
