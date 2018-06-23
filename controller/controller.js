@@ -92,7 +92,6 @@ router.get('/saved', (req, res) => {
                 data.numComments = data.comment.length
                 // Push element to array
                 results.push(data)
-        console.log(results)
                 if(index == array.length - 1)
                     res.render('index', { noneSaved: false, headlines: results })                    
                 else
